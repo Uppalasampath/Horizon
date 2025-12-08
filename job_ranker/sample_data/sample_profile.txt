@@ -1,0 +1,46 @@
+Jane Smith
+Backend Software Engineer
+
+SUMMARY
+Recent Computer Science graduate with strong foundation in backend development and API design.
+Completed multiple internships building scalable web services using Python and modern frameworks.
+Passionate about clean code, testing, and building reliable systems. Looking for entry-level
+backend engineering opportunities where I can contribute to meaningful projects and continue learning.
+
+TECHNICAL SKILLS
+Languages: Python, SQL, JavaScript, Bash
+Frameworks: Django, Flask, FastAPI
+Databases: PostgreSQL, MySQL, Redis
+Tools: Docker, Git, Linux, CI/CD, REST APIs
+Cloud: AWS (EC2, S3, RDS), basic experience
+
+EXPERIENCE
+
+Software Engineering Intern | TechCorp | Summer 2024
+- Developed RESTful APIs using Django and Django REST Framework for internal tools
+- Implemented authentication and authorization using JWT tokens
+- Optimized database queries reducing response time by 40%
+- Wrote unit tests achieving 85% code coverage
+- Collaborated with team using Git, code reviews, and agile methodology
+
+Backend Developer Intern | StartupXYZ | Summer 2023
+- Built microservices using Python and Flask
+- Worked with PostgreSQL databases and wrote complex SQL queries
+- Implemented caching with Redis improving performance
+- Created API documentation using OpenAPI/Swagger
+- Deployed services to AWS using Docker containers
+
+Personal Projects:
+- Job Board API: Built full REST API with user authentication, job postings, and search
+- Task Manager: FastAPI backend with PostgreSQL, Docker deployment
+- Open source contributions to Python web frameworks
+
+EDUCATION
+Bachelor of Science in Computer Science
+State University | Graduated May 2024
+GPA: 3.7/4.0
+Relevant Coursework: Data Structures, Algorithms, Databases, Software Engineering, Web Development
+
+INTERESTS
+Eager to work on backend systems, microservices, API design, and scalable architectures.
+Excited about learning new technologies and best practices in software engineering.
