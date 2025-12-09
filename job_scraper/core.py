@@ -10,6 +10,7 @@ from urllib.robotparser import RobotFileParser
 import aiohttp
 from .schema import JobPosting
 from .sources import GreenhouseScraper, LeverScraper, WorkdayScraper, GenericScraper
+from .detector import detect_ats, get_scraper_class
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -220,12 +221,12 @@ class JobScraperCore:
         scraper_name: Optional[str] = None,
     ) -> List[JobPosting]:
         """
-        Scrape jobs from a single URL.
+        Scrape jobs from a single URL with automatic ATS detection.
 
         Args:
             session: aiohttp ClientSession
             url: URL to scrape
-            scraper_name: Specific scraper to use (optional)
+            scraper_name: Specific scraper to use (optional, overrides detection)
 
         Returns:
             List of JobPosting objects
@@ -236,19 +237,25 @@ class JobScraperCore:
 
         # Select scraper
         if scraper_name and scraper_name in self.scrapers:
+            # Use explicitly specified scraper
             scraper = self.scrapers[scraper_name]
+            logger.info(f"Using explicitly specified {scraper.source} scraper for {url}")
         else:
-            # Auto-detect scraper
-            scraper = None
-            for name in ["greenhouse", "lever", "workday"]:
-                if self.scrapers[name].can_handle(url):
-                    scraper = self.scrapers[name]
-                    break
+            # Auto-detect ATS platform
+            detected_ats = detect_ats(url, html)
+            logger.info(f"Detected ATS: {detected_ats} for {url}")
 
-            if not scraper:
-                scraper = self.scrapers["generic"]
+            # Get scraper class and instantiate if not already in our cache
+            if detected_ats in self.scrapers:
+                scraper = self.scrapers[detected_ats]
+            else:
+                # Dynamically create scraper instance for detected ATS
+                scraper_class = get_scraper_class(detected_ats)
+                scraper = scraper_class()
+                # Cache it for future use
+                self.scrapers[detected_ats] = scraper
 
-        logger.info(f"Using {scraper.source} scraper for {url}")
+            logger.info(f"Using {scraper.source} scraper for {url}")
 
         try:
             jobs = scraper.extract_jobs_from_html(html, url)
@@ -257,7 +264,16 @@ class JobScraperCore:
 
         except Exception as e:
             logger.error(f"Error parsing {url}: {e}")
-            return []
+            # Fallback to generic scraper on error
+            logger.info("Falling back to generic scraper")
+            try:
+                generic_scraper = self.scrapers.get("generic", GenericScraper())
+                jobs = generic_scraper.extract_jobs_from_html(html, url)
+                logger.info(f"Generic scraper extracted {len(jobs)} jobs")
+                return jobs
+            except Exception as e2:
+                logger.error(f"Generic scraper also failed: {e2}")
+                return []
 
     async def scrape_urls(self, urls: List[str]) -> List[JobPosting]:
         """
